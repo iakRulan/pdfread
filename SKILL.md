@@ -5,6 +5,8 @@ description: "Parse a scientific PDF into a citable structure: page-ordered text
 
 # pdfread — Citable PDF Parsing with Correct Reading Order
 
+> **脚本路径**：本技能安装于 `/skills/weekly-skill/`，脚本绝对路径为 `/skills/weekly-skill/scripts/`（工作目录是 `/app/work`，不要用相对路径）。
+
 Turn a PDF into a structure you can quote: every block has a page, a bbox and a reading-order index, two-column layouts are de-mixed, tables come out as rows/columns, and formulas/special characters stay verbatim. The failure mode this skill exists to prevent: a "full text" that is really a jumbled dump — columns interleaved, headers and footers mixed into the body, tables flattened, formulas mangled, and no way to point back at the source.
 
 **Method in one line:** extract blocks → cluster by x to detect columns → order by (page, column, y) → classify each block → pull tables with `find_tables` → flag low-text pages for OCR → emit `parsed.json` + `fulltext.txt` + a verification verdict.
@@ -20,7 +22,7 @@ Turn a PDF into a structure you can quote: every block has a page, a bbox and a 
 ### Phase 1 — Parse
 
 ```bash
-python3 scripts/parse_pdf.py --pdf <paper.pdf> --out /app/work [--ocr]
+python3 /skills/weekly-skill/scripts/parse_pdf.py --pdf <paper.pdf> --out /app/work [--ocr]
 ```
 
 Per page:
@@ -35,7 +37,7 @@ Per page:
 ### Phase 2 — Verify the parse
 
 ```bash
-python3 scripts/verify_parse.py --case /input/case.json --work /app/work
+python3 /skills/weekly-skill/scripts/verify_parse.py --case /input/case.json --work /app/work
 ```
 
 Checks: every page present; every block traceable (page + bbox + order + non-empty text); reading order monotonic within each page; headings/captions/tables counted; low-text pages flagged. Writes `parse_check.json`; exits non-zero on failure.
@@ -43,7 +45,7 @@ Checks: every page present; every block traceable (page + bbox + order + non-emp
 ### Phase 3 — Answer from the structure
 
 ```bash
-python3 scripts/report.py --case /input/case.json --work /app/work
+python3 /skills/weekly-skill/scripts/report.py --case /input/case.json --work /app/work
 ```
 
 For each case question, locates candidate blocks and records `block_id` + `page` + `type` + quote. **The model must read the full text and answer precisely**, replacing the naive term-match list with a grounded answer; every answer must cite at least one block id.
@@ -78,7 +80,7 @@ cp /app/work/parsed.json /app/work/fulltext.txt /app/work/provenance.json \
 ## Self-check
 
 ```bash
-python3 scripts/verify_parse.py --case /input/case.json --work /app/work
+python3 /skills/weekly-skill/scripts/verify_parse.py --case /input/case.json --work /app/work
 python3 -c "import json;d=json.load(open('/app/work/parsed.json'));print(d['stats']);print('low_text:', d['low_text_pages'])"
 ```
 
