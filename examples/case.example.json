@@ -1,0 +1,9 @@
+{
+  "case_id": "example-pdfread",
+  "pdf": "paper.pdf",
+  "questions": [
+    "What BLEU score did the model achieve?",
+    "What is the base model parameter count?"
+  ],
+  "notes": "示例输入：paper.pdf 与 case.json 同目录；正式环境由平台提供。"
+}
